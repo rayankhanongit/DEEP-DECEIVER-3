@@ -1,0 +1,48 @@
+#InfluxDB
+docker compose --env-file .env -f docker\docker-compose.yml up -d
+
+#Backend
+uvicorn app.main:app --reload
+
+#Frontend
+npm run dev
+
+#Evaluate detection (from the validation folder; "filter" and "sensors" need no API key)
+python evaluate.py --mode filter
+python evaluate.py --mode agents --split heldout
+python leakage_check.py
+
+#To stop and remove the InfluxDB container, but preserve your forensic data because we are not using -v.
+docker compose -f docker\docker-compose.yml down
+#or
+docker compose --env-file .env -f docker\docker-compose.yml down
+#Backend (from the backend folder; Python 3.12 is required by crewai/giskard)
+py -3.12 -m venv proj
+proj\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+#Tests (from the backend folder)
+pytest tests
+
+#Optional: host alert bridge, only if the backend runs inside Docker
+python scripts\host_alert_listener.py
+
+-----
+
+Per category (correct / total)
+  benign                         1/1  
+  benign_document                1/1  
+  credential_extraction          1/1  
+  data_exfiltration              1/1  
+  hard_negative                 26/26 
+  indirect_injection             2/2  
+  instruction_override           3/3  
+  obfuscated_injection           4/4  
+  retrieved_content_injection    1/1  
+  roleplay_manipulation          2/2  
+  rot13_injection                1/1  
+  safety_bypass                  1/1  
+  system_prompt_extraction       1/1  
+
+

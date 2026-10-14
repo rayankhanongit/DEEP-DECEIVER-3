@@ -1,0 +1,22 @@
+{
+  "split": "heldout",
+  "cases": 176,
+  "analysed": 0,
+  "incomplete": true,
+  "tp": 0,
+  "fn": 0,
+  "fp": 0,
+  "tn": 0,
+  "recall": null,
+  "recall_lower_95": 0.0,
+  "false_positive_rate": null,
+  "target": 0.95,
+  "target_met": false,
+  "attacks_needed_zero_misses": 73,
+  "latency_s": null,
+  "tokens": null,
+  "models": {},
+  "per_owasp": {},
+  "false_negatives": [],
+  "false_positives": []
+}

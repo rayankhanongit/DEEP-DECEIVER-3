@@ -1,0 +1,373 @@
+/* =========================================================
+   UI primitives. Sizes follow the type scale in tokens.css.
+========================================================= */
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 48px;
+  padding: 0 var(--s-5);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: transparent;
+  font-size: var(--fs-body);
+  font-weight: 550;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease),
+    box-shadow var(--t-med) var(--ease);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+}
+
+.btn-sm {
+  min-height: 40px;
+  padding: 0 var(--s-4);
+  font-size: var(--fs-small);
+}
+
+.btn-icon {
+  width: 48px;
+  padding: 0;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #b8a0ff, var(--accent) 60%, #9577f2);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 28px -10px rgba(139, 92, 246, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 12px 36px -10px rgba(139, 92, 246, 1), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  border-color: var(--line-strong);
+  background: var(--glass);
+  color: var(--text);
+  backdrop-filter: blur(12px);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--glass-hover);
+  border-color: rgba(190, 170, 255, 0.5);
+}
+
+.btn-ghost {
+  color: var(--text-soft);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--accent-wash);
+  color: var(--text);
+}
+
+.btn-danger {
+  border-color: rgba(247, 115, 127, 0.45);
+  background: var(--crit-wash);
+  color: #ffd0d5;
+}
+
+/* ---------- status badges (icon + word, never colour alone) ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--accent-wash);
+  color: var(--text-soft);
+  font-size: var(--fs-small);
+  font-weight: 550;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.badge-accent { color: var(--accent-bright); border-color: var(--line-strong); }
+.badge-ok { color: var(--ok); border-color: rgba(98, 214, 164, 0.34); background: var(--ok-wash); }
+.badge-warn { color: var(--warn); border-color: rgba(243, 187, 85, 0.36); background: var(--warn-wash); }
+.badge-crit { color: var(--crit); border-color: rgba(247, 115, 127, 0.4); background: var(--crit-wash); }
+.badge-info { color: var(--info); border-color: rgba(143, 178, 255, 0.32); background: var(--info-wash); }
+
+/* ---------- surfaces ---------- */
+
+.glass {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px) saturate(1.1);
+}
+
+/* ---------- big numbers (open layout, not boxed cards) ---------- */
+
+.stat {
+  min-width: 0;
+}
+
+.stat-label {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+.stat-value {
+  margin-top: var(--s-2);
+  font-size: var(--fs-metric);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-ok .stat-value { color: var(--ok); }
+.stat-warn .stat-value { color: var(--warn); }
+.stat-crit .stat-value { color: var(--crit); }
+
+/* ---------- risk meter ---------- */
+
+.risk-meter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.meter-track {
+  fill: none;
+  stroke: rgba(190, 170, 255, 0.12);
+  stroke-width: 9;
+}
+
+.meter-fill {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1000ms var(--ease), stroke var(--t-med);
+}
+
+.meter-ok { stroke: var(--ok); }
+.meter-info { stroke: var(--info); }
+.meter-warn { stroke: var(--warn); }
+.meter-crit { stroke: var(--crit); }
+
+.meter-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.meter-label strong {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.meter-label span {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- sheet / dialog ---------- */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(3, 2, 8, 0.6);
+  backdrop-filter: blur(5px);
+  animation: fade-in var(--t-med) var(--ease);
+}
+
+.sheet {
+  width: min(760px, 100%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid var(--line-strong);
+  background: var(--glass-strong);
+  backdrop-filter: blur(26px);
+  box-shadow: var(--shadow-lg), -40px 0 120px -50px rgba(124, 92, 230, 0.5);
+  animation: sheet-in var(--t-slow) var(--ease);
+}
+
+.sheet-sm {
+  width: min(480px, 100%);
+}
+
+.dialog-backdrop {
+  justify-content: center;
+  align-items: center;
+  padding: var(--s-4);
+}
+
+.dialog-backdrop .sheet {
+  height: auto;
+  max-height: min(92dvh, 900px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xl);
+  animation: dialog-in var(--t-med) var(--ease);
+}
+
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-6) var(--s-6) var(--s-4);
+}
+
+.sheet-head h2 {
+  font-size: var(--fs-heading);
+  letter-spacing: -0.03em;
+}
+
+.sheet-head p {
+  margin-top: var(--s-2);
+  max-width: 52ch;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+}
+
+.sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s-2) var(--s-6) var(--s-7);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateX(48px); }
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+}
+
+/* ---------- misc ---------- */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-6) 0;
+  color: var(--text-muted);
+}
+
+.empty h3 {
+  color: var(--text);
+  font-size: var(--fs-lead);
+}
+
+.empty p {
+  max-width: 48ch;
+}
+
+.spinner {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.spinner svg {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.form-error {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+  margin: var(--s-4) 0;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid rgba(247, 115, 127, 0.4);
+  border-radius: var(--r-md);
+  background: var(--crit-wash);
+  color: #ffd0d5;
+}
+
+.form-error svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--inset);
+  color: var(--text);
+  font-size: var(--fs-body);
+}
+
+.field-input:focus-visible {
+  border-color: var(--accent);
+  outline-offset: 0;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: var(--s-2);
+  color: var(--text-soft);
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+
+dl.kv {
+  display: grid;
+  grid-template-columns: minmax(120px, 190px) 1fr;
+  gap: var(--s-3) var(--s-5);
+  margin: 0;
+  font-size: var(--fs-body);
+}
+
+dl.kv dt { color: var(--text-muted); }
+dl.kv dd { margin: 0; overflow-wrap: anywhere; }
+
+.quote {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--inset);
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: var(--fs-small);
+  line-height: 1.6;
+}
+
+.mono { font-family: var(--mono); font-size: var(--fs-small); }
+.muted { color: var(--text-muted); }
