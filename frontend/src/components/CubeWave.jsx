@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
+import GridFallback from "./GridFallback";
+
 /**
  * Cube field - the product's stage.
  *
@@ -243,6 +245,9 @@ function Cubes({ time, pointer, interactive, running }) {
 
 function hasWebGL() {
   try {
+    // debug switch: localStorage.dd_force_fallback = "1" previews the no-WebGL grid
+    if (localStorage.getItem("dd_force_fallback") === "1") return false;
+
     const canvas = document.createElement("canvas");
 
     return Boolean(
@@ -337,7 +342,7 @@ function CubeWave({ mode = "home", paused = false, allowReduced = false }) {
           <Cubes time={time} pointer={pointer} interactive={!reduced && !paused} running={running} />
         </Canvas>
       ) : (
-        <div className="stage-fallback" />
+        <GridFallback pointer={pointer} running={running} interactive={!reduced && !paused} />
       )}
     </div>
   );

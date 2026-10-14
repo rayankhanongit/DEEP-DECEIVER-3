@@ -13,6 +13,8 @@ from app.security.alerts import alert_engine
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.chat import router as chat_router
+from app.api.benchmark import router as benchmark_router
+from app.api.ops import router as ops_router
 from app.api.soc import router as soc_router
 from app.api.security import router as security_router
 from app.api.red_team import router as red_team_router
@@ -64,6 +66,8 @@ app.add_middleware(
 
 app.include_router(chat_router)
 app.include_router(soc_router)
+app.include_router(benchmark_router)
+app.include_router(ops_router)
 app.include_router(security_router)
 app.include_router(red_team_router)
 

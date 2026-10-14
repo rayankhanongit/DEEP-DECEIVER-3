@@ -1,6 +1,8 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
+  Activity,
+  Gauge,
   LayoutDashboard,
   Lock,
   MessageSquare,
@@ -15,6 +17,7 @@ import {
 
 import Logo from "./components/Logo";
 import ChatPage from "./pages/ChatPage";
+import ThemeToggle from "./components/ThemeToggle";
 import OperatorUnlock from "./components/OperatorUnlock";
 import SecurityToast from "./components/SecurityToast";
 import Button from "./components/ui/Button";
@@ -32,12 +35,16 @@ import "./styles/layout.css";
 const CubeWave = lazy(() => import("./components/CubeWave"));
 const SecurityPage = lazy(() => import("./pages/SecurityPage"));
 const SOCPage = lazy(() => import("./pages/SOCPage"));
+const BenchmarkPage = lazy(() => import("./pages/BenchmarkPage"));
+const OpsPage = lazy(() => import("./pages/OpsPage"));
 const RedTeamPanel = lazy(() => import("./components/RedTeamPanel"));
 
 const OPERATOR_NAV = [
   { id: "chat", label: "Assistant", Icon: MessageSquare },
   { id: "security", label: "Security Monitor", Icon: Radar },
   { id: "soc", label: "SOC Dashboard", Icon: LayoutDashboard },
+  { id: "ops", label: "Command Center", Icon: Activity },
+  { id: "benchmark", label: "Benchmark", Icon: Gauge },
 ];
 
 const STORE_KEY = "dd_conversations_v1";
@@ -440,6 +447,8 @@ function App() {
             </div>
           )}
 
+          <ThemeToggle />
+
           <button
             type="button"
             className={motionOff ? "nav-toggle motion-toggle with-label" : "nav-toggle motion-toggle"}
@@ -604,6 +613,18 @@ function App() {
           {operator && page === "soc" && (
             <div className="page">
               <SOCPage />
+            </div>
+          )}
+
+          {operator && page === "ops" && (
+            <div className="page">
+              <OpsPage />
+            </div>
+          )}
+
+          {operator && page === "benchmark" && (
+            <div className="page">
+              <BenchmarkPage />
             </div>
           )}
         </Suspense>

@@ -14,11 +14,12 @@ contained simply stays in the honeypot.
 """
 
 import logging
+import os
 import threading
 import time
 
 from app.agents.sentry import Sentry
-from app.crew.runtime import AnalysisUnavailable, DEEPDeceiverCrewRuntime
+from app.crew.runtime import AnalysisUnavailable, DEEPDeceiverCrewRuntime, patient
 from app.deception import conversation as honeypot
 from app.detection.fast_filter import fast_filter
 from app.detection.stateful import StatefulDetector
@@ -28,6 +29,7 @@ from app.intelligence.mitre import map_to_mitre_atlas
 from app.security.monitor import get_monitor
 from app.services import chat_session
 from app.services.sessions import containment
+from app.services.trace import trace
 from app.utils.bounded import BoundedStore
 
 logger = logging.getLogger("deep_deceiver.pipeline")
@@ -51,6 +53,11 @@ class Pipeline:
         registry=None,
         monitor_factory=None,
     ):
+        if crew is None and os.getenv("DEMO_MODE") == "1":
+            from app.crew.demo import DemoCrew
+
+            crew = DemoCrew()
+
         self.crew = crew or DEEPDeceiverCrewRuntime()
         self._sensor = sensor
         self.kill_chain = kill_chain or KillChainTracker()
@@ -127,11 +134,14 @@ class Pipeline:
         *,
         origin: str = "user",
         system_prompt: str | None = None,
+        canned_replies: tuple[str, str] | None = None,
     ) -> dict:
         """
         origin="user"      a real chat message (full forensics and alerting)
         origin="red_team"  an assessment attack: same defence, but the Red Team
                            service records its own findings
+        origin="demo"      the scripted walkthrough: no forensics or alerts;
+                           `canned_replies` = (normal, decoy) replaces the LLM
         """
 
         chat_session.seed_history(session_id, history)
@@ -157,6 +167,8 @@ class Pipeline:
         engine = "crewai"
         unavailable = None
 
+        patience = patient.set(origin == "red_team")
+
         try:
             verdict = self.crew.analyze(
                 text=message,
@@ -172,6 +184,23 @@ class Pipeline:
         except Exception as error:
             logger.warning("Security analysis failed: %s", type(error).__name__)
             engine = "unavailable"
+        finally:
+            patient.reset(patience)
+
+        # AGENT_FALLBACK=1 (demo setups on a rate-limited key): when the agents cannot
+        # answer, judge on the sensors alone instead of holding the message. Visible to
+        # the operator as engine/model "sensor-fallback"; never used while agents work.
+        if verdict is None and os.getenv("AGENT_FALLBACK") == "1":
+            from app.crew.demo import DemoCrew
+
+            verdict = DemoCrew("sensor-fallback").analyze(
+                text=message,
+                fast_filter_result=filter_result,
+                stateful_result=stateful_result,
+                semantic_result=semantic,
+                already_contained=was_contained,
+            )
+            engine = "sensor-fallback"
 
         t_agents = time.perf_counter()
 
@@ -197,7 +226,7 @@ class Pipeline:
             # keeps talking to the same "Atlas", now backed by fictional data.
             persona = honeypot.persona_for(session_id)
 
-            response = honeypot.reply(
+            response = canned_replies[1] if canned_replies else honeypot.reply(
                 session_id=session_id,
                 message=message,
                 persona=persona,
@@ -227,7 +256,7 @@ class Pipeline:
 
         else:
             try:
-                response = chat_session.production_reply(
+                response = canned_replies[0] if canned_replies else chat_session.production_reply(
                     session_id, message, system_prompt=system_prompt
                 )
             except Exception:
@@ -247,7 +276,7 @@ class Pipeline:
         stage = analyst.get("kill_chain_stage")
         stage = None if stage in (None, "none") else stage
 
-        if verdict is not None and origin == "user":
+        if verdict is not None and origin in ("user", "demo"):
             kill_chain = self.kill_chain.update(
                 session_id=session_id,
                 message=message,
@@ -298,6 +327,9 @@ class Pipeline:
         }
 
         if origin != "user":
+            if origin == "demo":
+                trace.record(session_id, "demo", message, result)
+
             return result
 
         # ---- 6. forensics and monitoring (real users only) --------------
@@ -332,6 +364,8 @@ class Pipeline:
                 "alert_triggered": False,
                 "event_id": None,
             }
+
+        trace.record(session_id, "live", message, result)
 
         return result
 

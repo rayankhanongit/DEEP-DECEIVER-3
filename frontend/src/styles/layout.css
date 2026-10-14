@@ -42,6 +42,12 @@
   mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 85%);
 }
 
+.grid-2d {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .stage-fallback {
   width: 100%;
   height: 100%;
@@ -60,8 +66,8 @@
   z-index: var(--z-stage);
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 45% at 50% 100%, rgba(7, 6, 13, 0.92), transparent 72%),
-    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(7, 6, 13, 0.7), transparent 70%);
+    radial-gradient(ellipse 70% 45% at 50% 100%, rgba(var(--bg-rgb), 0.92), transparent 72%),
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(var(--bg-rgb), 0.7), transparent 70%);
 }
 
 .main {
@@ -391,7 +397,7 @@
   margin-right: var(--s-1);
   opacity: 1;
   background: var(--crit-wash);
-  color: #ffd0d5;
+  color: var(--crit-ink);
   font-size: var(--fs-small);
   font-weight: 550;
 }
@@ -443,7 +449,7 @@
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1.02;
-  text-shadow: 0 4px 60px rgba(7, 6, 13, 0.95);
+  text-shadow: 0 4px 60px rgba(var(--bg-rgb), 0.95);
 }
 
 .home-copy p {
@@ -452,7 +458,7 @@
   color: var(--text-soft);
   font-size: var(--fs-lead);
   line-height: 1.5;
-  text-shadow: 0 2px 30px rgba(7, 6, 13, 0.9);
+  text-shadow: 0 2px 30px rgba(var(--bg-rgb), 0.9);
 }
 
 .home-composer {
@@ -610,7 +616,7 @@
   display: flex;
   gap: var(--s-3);
   align-items: flex-start;
-  color: #ffd0d5;
+  color: var(--crit-ink);
 }
 
 .chat-error svg {
@@ -683,7 +689,7 @@
   border: 1px solid rgba(243, 187, 85, 0.36);
   border-radius: var(--r-md);
   background: var(--warn-wash);
-  color: #f7dca3;
+  color: var(--warn-ink);
 }
 
 .honeypot-notice svg {
@@ -700,7 +706,7 @@
   margin-top: var(--s-1);
   font-size: var(--fs-small);
   line-height: 1.55;
-  color: #dec890;
+  color: var(--warn-ink);
 }
 
 .security-details {
@@ -843,7 +849,7 @@
 
 .redteam-trigger:hover:not(:disabled) {
   border-color: rgba(247, 115, 127, 0.55);
-  color: #ffd0d5;
+  color: var(--crit-ink);
 }
 
 .composer-note {
@@ -1893,7 +1899,7 @@ textarea {
   position: absolute;
   inset: -40px -10% -30px;
   z-index: -1;
-  background: radial-gradient(ellipse 60% 62% at 50% 50%, rgba(7, 6, 13, 0.9), rgba(7, 6, 13, 0) 74%);
+  background: radial-gradient(ellipse 60% 62% at 50% 50%, rgba(var(--bg-rgb), 0.9), rgba(var(--bg-rgb), 0) 74%);
   pointer-events: none;
 }
 
@@ -1903,7 +1909,7 @@ textarea {
   position: absolute;
   inset: 0 0 -28px;
   z-index: -1;
-  background: linear-gradient(180deg, rgba(7, 6, 13, 0.98) 62%, rgba(7, 6, 13, 0));
+  background: linear-gradient(180deg, rgba(var(--bg-rgb), 0.98) 62%, rgba(var(--bg-rgb), 0));
   pointer-events: none;
 }
 

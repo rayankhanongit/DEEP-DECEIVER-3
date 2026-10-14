@@ -1,3 +1,4 @@
+import pytest
 import hashlib
 import os
 
@@ -62,3 +63,9 @@ if not os.getenv("DD_TEST_REAL_EMBEDDINGS"):
     # Hashed n-gram vectors score lexical overlap lower than real embeddings,
     # so the Sentry threshold is lowered for the offline stand-in only.
     os.environ.setdefault("SENTRY_THRESHOLD", "0.35")
+
+
+@pytest.fixture(autouse=True)
+def _no_agent_fallback(monkeypatch):
+    # A developer's .env may enable AGENT_FALLBACK; tests opt in explicitly.
+    monkeypatch.delenv("AGENT_FALLBACK", raising=False)
