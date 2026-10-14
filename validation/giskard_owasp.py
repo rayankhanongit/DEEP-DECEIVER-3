@@ -127,7 +127,7 @@ async def run_case(case, pipeline):
         info = observed.get("unavailable") or {}
         reason, wait = info.get("reason", "unavailable"), info.get("retry_after") or 0
 
-        if reason == "rate_limited" or wait > 180:
+        if wait > 180 or (reason == "rate_limited" and not wait):
             raise QuotaStop(reason, wait)
 
         raise RuntimeError(f"analysis unavailable: {reason}")

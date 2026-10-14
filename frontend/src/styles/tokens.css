@@ -13,6 +13,7 @@
 
   /* ---- surfaces ---- */
   --bg: #07060d;
+  --bg-rgb: 7, 6, 13;               /* for translucent veils over the stage */
   --bg-raised: #0c0a15;
   --glass: rgba(16, 13, 28, 0.62);
   --glass-strong: rgba(14, 11, 25, 0.86);
@@ -44,6 +45,8 @@
   --warn-wash: rgba(243, 187, 85, 0.12);
   --crit: #f7737f;
   --crit-wash: rgba(247, 115, 127, 0.14);
+  --crit-ink: #ffd0d5;                         /* text on a crit wash */
+  --warn-ink: #f7dca3;
   --info: #8fb2ff;
   --info-wash: rgba(143, 178, 255, 0.12);
 
@@ -100,4 +103,70 @@
   --content-max: 1240px;
   --nav-width: 340px;
   --nav-edge: 22px;
+}
+
+/* ---------- light theme: same tokens, designed values (not an inversion) ---------- */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f3f1fa;
+  --bg-rgb: 243, 241, 250;
+  --bg-raised: #ffffff;
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-strong: rgba(255, 255, 255, 0.97);
+  --glass-hover: rgba(236, 231, 252, 0.95);
+  --inset: rgba(232, 228, 246, 0.75);
+
+  --line: rgba(52, 36, 110, 0.14);
+  --line-strong: rgba(52, 36, 110, 0.32);
+
+  --text: #181330;
+  --text-soft: #3a3454;
+  --text-muted: #565070;
+  --text-faint: #675f82;
+
+  --accent: #6446d0;
+  --accent-bright: #4f35b3;
+  --accent-deep: #3f2a96;
+  --accent-wash: rgba(100, 70, 208, 0.1);
+  --accent-ink: #ffffff;
+  --focus: #3f2a96;
+
+  --ok: #0d7a50;
+  --ok-wash: rgba(13, 122, 80, 0.1);
+  --warn: #8a5600;
+  --warn-wash: rgba(176, 108, 0, 0.12);
+  --crit: #c0243a;
+  --crit-wash: rgba(192, 36, 58, 0.09);
+  --crit-ink: #8f1829;
+  --warn-ink: #6e4400;
+  --info: #2a56bd;
+  --info-wash: rgba(42, 86, 189, 0.1);
+
+  --shadow-md: 0 10px 28px -14px rgba(44, 28, 110, 0.28);
+  --shadow-lg: 0 28px 70px -24px rgba(44, 28, 110, 0.32);
+  --glow: 0 0 0 1px var(--line-strong), 0 14px 50px -16px rgba(100, 70, 208, 0.35);
+}
+
+/* the 3D stage draws dark cubes; flip its luminance (not hue) on light */
+:root[data-theme="light"] .stage canvas:not(.grid-2d) {
+  filter: invert(1) hue-rotate(180deg) saturate(0.8);
+  opacity: 0.55;
+}
+
+:root[data-theme="light"] .btn-primary {
+  background: linear-gradient(180deg, #7b5ee3, var(--accent) 60%, #5238b8);
+  box-shadow: 0 8px 24px -10px rgba(100, 70, 208, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+:root[data-theme="light"] ::selection {
+  background: rgba(100, 70, 208, 0.25);
+}
+
+/* brief cross-fade only while switching (never on first paint) */
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease !important;
 }

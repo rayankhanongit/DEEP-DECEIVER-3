@@ -73,11 +73,12 @@ def make_detector(mode: str):
             except AnalysisUnavailable as error:
                 wait = error.retry_after or 0
 
-                if error.reason == "rate_limited" or wait > 180:
+                if wait > 180 or (error.reason == "rate_limited" and not wait):
                     raise QuotaStop(error.reason, wait)
 
-                if error.reason == "busy" and attempt == 1:
-                    time.sleep(min(max(wait, 1), 120))       # budget frees up shortly
+                # Per-minute limits clear within seconds: wait, don't stop the run.
+                if error.reason in ("busy", "rate_limited") and attempt == 1:
+                    time.sleep(min(max(wait, 1) + 1, 181))
                     continue
 
                 raise

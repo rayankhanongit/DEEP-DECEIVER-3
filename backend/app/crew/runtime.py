@@ -10,6 +10,7 @@ app/services/pipeline.py: the message is held, not forwarded).
 """
 
 import logging
+import contextvars
 import os
 import threading
 import time
@@ -56,6 +57,12 @@ def estimate_tokens() -> int:
         max_tokens = 600
 
     return 3 * (700 + max_tokens)
+
+
+# Set by the Red Team: a batch of attacks should wait for the per-minute token
+# budget to refill (up to PATIENT_WAIT) instead of failing every test.
+patient = contextvars.ContextVar("patient", default=False)
+PATIENT_WAIT = 60.0
 
 
 def queue_seconds() -> float:
@@ -175,9 +182,10 @@ class DEEPDeceiverCrewRuntime:
 
         chain = get_chain()
         estimate = estimate_tokens()
-        max_wait = queue_seconds()
+        max_wait = PATIENT_WAIT if patient.get() else queue_seconds()
 
         rate_limited: set[str] = set()
+        throttled = False
         failures = 0
         last_error: Exception | None = None
 
@@ -201,9 +209,15 @@ class DEEPDeceiverCrewRuntime:
                 last_error = error
                 chain.refund(model, estimate)
 
-                if is_rate_limit_error(error):
-                    chain.block(model, retry_after_from(error))
+                # CrewAI's event bus raises a bare RuntimeError while reporting a
+                # failed call, which hides the 429 behind it. Treat it as a short
+                # throttle: re-sending to the same model only burns more tokens.
+                masked = isinstance(error, RuntimeError) and not is_rate_limit_error(error)
+
+                if masked or is_rate_limit_error(error):
+                    chain.block(model, 5.0 if masked else retry_after_from(error))
                     rate_limited.add(model)
+                    throttled = True
                     continue
 
                 failures += 1
@@ -225,7 +239,7 @@ class DEEPDeceiverCrewRuntime:
 
             return result
 
-        if last_error is not None and not is_rate_limit_error(last_error):
+        if last_error is not None and not throttled and not is_rate_limit_error(last_error):
             raise AnalysisUnavailable(type(last_error).__name__) from last_error
 
         reason = "rate_limited" if chain.all_blocked() else "busy"
